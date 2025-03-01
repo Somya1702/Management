@@ -62,7 +62,7 @@ def home():
                             <button onclick="toggleTask(${task.id}, ${task.completed})">
                                 ${task.completed ? 'Undo' : 'Complete'}
                             </button>
-                            <button onclick="deleteTask(${task.id})">Delete</button>
+                            <button onclick="confirmDelete(${task.id})">Delete</button>
                         </div>
                     </div>
                 `).join("");
@@ -106,6 +106,13 @@ def home():
                 fetchTasks();
             } catch (error) {
                 console.error("Error updating task:", error);
+            }
+        }
+
+        function confirmDelete(id) {
+            const confirmation = confirm("Are you sure you want to delete this task?");
+            if (confirmation) {
+                deleteTask(id);
             }
         }
 
