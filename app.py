@@ -27,7 +27,7 @@ def home():
     </style>
     <script>
         function showTaskForm() {
-            document.getElementById("taskForm").style.display = "flex";
+            document.getElementById("taskForm").style.display = "block";
         }
         
         function addTask() {
@@ -43,13 +43,6 @@ def home():
                 alert("All fields are required! Please fill in all details.");
                 return;
             }
-            const litigation = document.getElementById("litigation").value;
-            const name = document.getElementById("name").value;
-            const entity = document.getElementById("entity").value;
-            const task = document.getElementById("task").value;
-            const status = document.getElementById("status").value;
-            const dueDate = document.getElementById("due_date").value;
-            const pendingFrom = document.getElementById("pending_from").value;
             
             fetch("/add_task", {
                 method: "POST",
@@ -79,7 +72,7 @@ def home():
                         <td>${task.entity}</td>
                         <td>${task.task}</td>
                         <td>${task.status}</td>
-                        <td>${new Date(task.dueDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
+                        <td>${task.dueDate}</td>
                         <td>${task.pendingFrom}</td>
                     </tr>`;
                     tableBody.innerHTML += row;
@@ -99,7 +92,7 @@ def home():
         <input type="text" id="entity" placeholder="Entity">
         <input type="text" id="task" placeholder="Task">
         <input type="text" id="status" placeholder="Status">
-        <input type="date" id="due_date" placeholder="Due Date" placeholder="Due Date">
+        <input type="date" id="due_date" placeholder="Due Date">
         <input type="text" id="pending_from" placeholder="Pending From">
         <button onclick="addTask()">Save Task</button>
     </div>
