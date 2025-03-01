@@ -27,7 +27,12 @@ def home():
     </style>
     <script>
         function showTaskForm() {
-            document.getElementById("taskForm").style.display = "block";
+            let form = document.getElementById("taskForm");
+            if (form.style.display === "none" || form.style.display === "") {
+                form.style.display = "flex";
+            } else {
+                form.style.display = "none";
+            }
         }
         
         function addTask() {
