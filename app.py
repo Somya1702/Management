@@ -45,7 +45,13 @@ def home():
                 body: JSON.stringify({ litigation, name, entity, task, status, dueDate, pendingFrom })
             }).then(response => response.json()).then(() => {
                 loadTasks();
-                document.getElementById("taskForm").reset();
+                document.getElementById("litigation").value = "";
+                document.getElementById("name").value = "";
+                document.getElementById("entity").value = "";
+                document.getElementById("task").value = "";
+                document.getElementById("status").value = "";
+                document.getElementById("due_date").value = "";
+                document.getElementById("pending_from").value = "";
             });
         }
         
