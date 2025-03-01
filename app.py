@@ -22,118 +22,25 @@ def home():
         body { font-family: Arial, sans-serif; text-align: center; margin-top: 5%; }
         table { width: 80%; margin: auto; border-collapse: collapse; margin-top: 20px; }
         th, td { padding: 10px; border: 1px solid #ddd; text-align: center; }
-        th { background: #f4f4f4; }
+        th { background: #f4f4f4; cursor: pointer; }
         #taskForm { display: none; flex-direction: column; align-items: center; margin-top: 20px; }
-            let sortOrder = {}; let currentSortedColumn = null;
-        function sortTable(header) {
-            let columnIndex = Array.from(header.parentNode.children).indexOf(header);
+    </style>
+    <script>
+        let sortOrder = {};
+        function sortTable(columnIndex) {
             let table = document.querySelector("table tbody");
             let rows = Array.from(table.querySelectorAll("tr"));
             
-            if (currentSortedColumn === columnIndex) {
-                sortOrder[columnIndex] = !sortOrder[columnIndex];
-            } else {
-                sortOrder = {}; // Reset previous sort order
-                sortOrder[columnIndex] = true; // Default to ascending
-            }
-            currentSortedColumn = columnIndex;
-            
+            sortOrder[columnIndex] = !sortOrder[columnIndex];
             rows.sort((a, b) => {
-                let cellA = a.children[columnIndex].innerText.toLowerCase();
-                let cellB = b.children[columnIndex].innerText.toLowerCase();
-                if (!isNaN(cellA) && !isNaN(cellB)) {
-                    return sortOrder[columnIndex] ? cellA - cellB : cellB - cellA;
-                }
-                return sortOrder[columnIndex] ? cellA.localeCompare(cellB) : cellB.localeCompare(cellA);
-            });
-            
-            table.innerHTML = "";
-            rows.forEach(row => table.appendChild(row));
-        } else {
-                sortOrder = {}; // Reset previous sort order
-                sortOrder[columnIndex] = true; // Default to ascending
-            }
-            currentSortedColumn = columnIndex;
-            
-            rows.sort((a, b) => {
-                let cellA = a.children[columnIndex].innerText.toLowerCase();
-                let cellB = b.children[columnIndex].innerText.toLowerCase();
-                if (!isNaN(cellA) && !isNaN(cellB)) {
-                    return sortOrder[columnIndex] ? cellA - cellB : cellB - cellA;
-                }
+                let cellA = a.children[columnIndex].innerText.trim().toLowerCase();
+                let cellB = b.children[columnIndex].innerText.trim().toLowerCase();
                 return sortOrder[columnIndex] ? cellA.localeCompare(cellB) : cellB.localeCompare(cellA);
             });
             
             table.innerHTML = "";
             rows.forEach(row => table.appendChild(row));
         }
-        });
-            
-            table.innerHTML = "";
-            rows.forEach(row => table.appendChild(row));
-        }
-        }
-    </style>
-    <script>
-        function showTaskForm() {
-            let form = document.getElementById("taskForm");
-            if (form.style.display === "none" || form.style.display === "") {
-                form.style.display = "flex";
-            } else {
-                form.style.display = "none";
-            }
-        }
-        
-        function addTask() {
-            const litigation = document.getElementById("litigation").value;
-            const name = document.getElementById("name").value;
-            const entity = document.getElementById("entity").value;
-            const task = document.getElementById("task").value;
-            const status = document.getElementById("status").value;
-            const dueDate = document.getElementById("due_date").value;
-            const pendingFrom = document.getElementById("pending_from").value;
-            
-            if (!litigation || !name || !entity || !task || !status || !dueDate || !pendingFrom) {
-                alert("All fields are required! Please fill in all details.");
-                return;
-            }
-            
-            fetch("/add_task", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ litigation, name, entity, task, status, dueDate, pendingFrom })
-            }).then(response => response.json()).then(() => {
-                loadTasks();
-                document.getElementById("litigation").value = "";
-                document.getElementById("name").value = "";
-                document.getElementById("entity").value = "";
-                document.getElementById("task").value = "";
-                document.getElementById("status").value = "";
-                document.getElementById("due_date").value = "";
-                document.getElementById("pending_from").value = "";
-            });
-        }
-        
-        function loadTasks() {
-            fetch("/tasks").then(response => response.json()).then(data => {
-                let tableBody = document.getElementById("taskTableBody");
-                tableBody.innerHTML = "";
-                data.forEach((task, index) => {
-                    let row = `<tr>
-                        <td>${index + 1}</td>
-                        <td>${task.litigation}</td>
-                        <td>${task.name}</td>
-                        <td>${task.entity}</td>
-                        <td>${task.task}</td>
-                        <td>${task.status}</td>
-                        <td>${task.dueDate}</td>
-                        <td>${task.pendingFrom}</td>
-                    </tr>`;
-                    tableBody.innerHTML += row;
-                });
-            });
-        }
-        window.onload = loadTasks;
     </script>
 </head>
 <body>
@@ -154,14 +61,14 @@ def home():
     <table>
         <thead>
             <tr>
-                <th>S.No. <button onclick='sortTable(this.parentNode)'>⇅</button></th>
-                <th>Litigation <button onclick='sortTable(this.parentNode)'>⇅</button></th>
-                <th>Name <button onclick='sortTable(this.parentNode)'>⇅</button></th>
-                <th>Entity <button onclick='sortTable(this.parentNode)'>⇅</button></th>
-                <th>Task <button onclick='sortTable(this.parentNode)'>⇅</button></th>
-                <th>Status <button onclick='sortTable(this.parentNode)'>⇅</button></th>
-                <th>Due Date <button onclick='sortTable(this.parentNode)'>⇅</button></th>
-                <th>Pending From <button onclick='sortTable(this.parentNode)'>⇅</button></th>
+                <th onclick="sortTable(0)">S.No. ⇅</th>
+                <th onclick="sortTable(1)">Litigation ⇅</th>
+                <th onclick="sortTable(2)">Name ⇅</th>
+                <th onclick="sortTable(3)">Entity ⇅</th>
+                <th onclick="sortTable(4)">Task ⇅</th>
+                <th onclick="sortTable(5)">Status ⇅</th>
+                <th onclick="sortTable(6)">Due Date ⇅</th>
+                <th onclick="sortTable(7)">Pending From ⇅</th>
             </tr>
         </thead>
         <tbody id="taskTableBody">
