@@ -49,10 +49,12 @@ def home():
             
             table.innerHTML = "";
             rows.forEach(row => table.appendChild(row));
+        }
         });
             
             table.innerHTML = "";
             rows.forEach(row => table.appendChild(row));
+        }
         }
     </style>
     <script>
