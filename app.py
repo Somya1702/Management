@@ -15,10 +15,29 @@ def home():
         table { width: 80%; margin: auto; border-collapse: collapse; margin-top: 20px; }
         th, td { padding: 10px; border: 1px solid #ddd; text-align: center; }
         th { background: #f4f4f4; }
+        #taskForm { display: none; margin-top: 20px; }
     </style>
+    <script>
+        function showTaskForm() {
+            document.getElementById("taskForm").style.display = "block";
+        }
+    </script>
 </head>
 <body>
     <h1>Task Manager</h1>
+    <button onclick="showTaskForm()">Add New Task</button>
+    
+    <div id="taskForm">
+        <input type="text" placeholder="Litigation">
+        <input type="text" placeholder="Name">
+        <input type="text" placeholder="Entity">
+        <input type="text" placeholder="Task">
+        <input type="text" placeholder="Status">
+        <input type="date" placeholder="Due Date">
+        <input type="text" placeholder="Pending From">
+        <button>Save Task</button>
+    </div>
+    
     <table>
         <thead>
             <tr>
