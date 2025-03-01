@@ -22,7 +22,7 @@ class Task(db.Model):
     entity = db.Column(db.String(200), nullable=False)
     task = db.Column(db.String(300), nullable=False)
     status = db.Column(db.String(100), nullable=False, default="Pending")
-    due_date = db.Column(db.String(100), nullable=True)  # Will store as `dd-MMM-yyyy`
+    due_date = db.Column(db.String(100), nullable=True)  # Stores as `dd-MMM-yyyy`
     pending_from = db.Column(db.String(200), nullable=True)
     document_link = db.Column(db.String(500), nullable=True)
 
@@ -139,10 +139,22 @@ def home():
                     body: JSON.stringify({ litigation, name, entity, task, status, due_date, pending_from, document_link })
                 });
                 fetchTasks();
+                clearFields();
                 document.getElementById("taskForm").style.display = "none";
             } catch (error) {
                 console.error("Error adding task:", error);
             }
+        }
+
+        function clearFields() {
+            document.getElementById("litigation").value = "";
+            document.getElementById("name").value = "";
+            document.getElementById("entity").value = "";
+            document.getElementById("task").value = "";
+            document.getElementById("status").value = "";
+            document.getElementById("due_date").value = "";
+            document.getElementById("pending_from").value = "";
+            document.getElementById("document_link").value = "";
         }
 
         function confirmDelete(id) {
@@ -165,29 +177,6 @@ def home():
     </script>
 </body>
 </html>''')
-
-# API Routes
-@app.route("/tasks", methods=["GET"])
-def get_tasks():
-    tasks = Task.query.all()
-    return jsonify([{ "id": task.id, "litigation": task.litigation, "name": task.name, "entity": task.entity, 
-                      "task": task.task, "status": task.status, "due_date": format_date(task.due_date), "pending_from": task.pending_from, 
-                      "document_link": task.document_link} for task in tasks])
-
-@app.route("/tasks", methods=["POST"])
-def add_task():
-    data = request.json
-    if data["due_date"]:
-        data["due_date"] = format_date(data["due_date"])
-    new_task = Task(**data)
-    db.session.add(new_task)
-    db.session.commit()
-    return jsonify({"message": "Task added!"})
-
-def format_date(date_str):
-    if date_str:
-        return datetime.strptime(date_str, "%Y-%m-%d").strftime("%d-%b-%Y")
-    return None
 
 # Run Flask App
 if __name__ == "__main__":
