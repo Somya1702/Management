@@ -1,8 +1,14 @@
 from flask import Flask, render_template_string, request, jsonify
+from datetime import datetime
 
 app = Flask(__name__)
 
 tasks = []  # In-memory storage for tasks
+
+def format_date(date_str):
+    if date_str:
+        return datetime.strptime(date_str, "%Y-%m-%d").strftime("%d-%b-%Y")
+    return ""
 
 @app.route("/", methods=["GET"])
 def home():
@@ -55,7 +61,7 @@ def home():
                         <td>${task.entity}</td>
                         <td>${task.task}</td>
                         <td>${task.status}</td>
-                        <td>${task.dueDate}</td>
+                        <td>${new Date(task.dueDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
                         <td>${task.pendingFrom}</td>
                     </tr>`;
                     tableBody.innerHTML += row;
@@ -103,6 +109,7 @@ def home():
 @app.route("/add_task", methods=["POST"])
 def add_task():
     data = request.json
+    data["dueDate"] = format_date(data["dueDate"])
     tasks.append(data)
     return jsonify({"message": "Task added successfully!"})
 
