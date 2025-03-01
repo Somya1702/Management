@@ -49,7 +49,7 @@ def home():
     <h2>Tasks</h2>
     <div id="taskList"></div>
     <script>
-        const API_URL = "/tasks"; // API calls will go directly to Flask server
+        const API_URL = "/tasks";
 
         async function fetchTasks() {
             try {
@@ -72,10 +72,12 @@ def home():
         }
 
         async function addTask() {
-            const title = document.getElementById("taskTitle").value;
-            const description = document.getElementById("taskDesc").value;
+            const titleInput = document.getElementById("taskTitle");
+            const descInput = document.getElementById("taskDesc");
+            const title = titleInput.value.trim();
+            const description = descInput.value.trim();
 
-            if (!title.trim()) {
+            if (!title) {
                 alert("Task title is required!");
                 return;
             }
@@ -87,6 +89,8 @@ def home():
                     body: JSON.stringify({ title, description })
                 });
                 fetchTasks();
+                titleInput.value = "";  // Clear title input
+                descInput.value = "";   // Clear description input
             } catch (error) {
                 console.error("Error adding task:", error);
             }
