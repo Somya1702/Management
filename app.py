@@ -24,6 +24,22 @@ def home():
         th, td { padding: 10px; border: 1px solid #ddd; text-align: center; }
         th { background: #f4f4f4; }
         #taskForm { display: none; flex-direction: column; align-items: center; margin-top: 20px; }
+            let sortOrder = {};
+        function sortTable(header) {
+            let columnIndex = Array.from(header.parentNode.children).indexOf(header);
+            let table = document.querySelector("table tbody");
+            let rows = Array.from(table.querySelectorAll("tr"));
+            
+            sortOrder[columnIndex] = !sortOrder[columnIndex];
+            rows.sort((a, b) => {
+                let cellA = a.children[columnIndex].innerText.toLowerCase();
+                let cellB = b.children[columnIndex].innerText.toLowerCase();
+                return sortOrder[columnIndex] ? cellA.localeCompare(cellB) : cellB.localeCompare(cellA);
+            });
+            
+            table.innerHTML = "";
+            rows.forEach(row => table.appendChild(row));
+        }
     </style>
     <script>
         function showTaskForm() {
@@ -105,14 +121,14 @@ def home():
     <table>
         <thead>
             <tr>
-                <th>S.No.</th>
-                <th>Litigation</th>
-                <th>Name</th>
-                <th>Entity</th>
-                <th>Task</th>
-                <th>Status</th>
-                <th>Due Date</th>
-                <th>Pending From</th>
+                <th onclick='sortTable(this)'>S.No.</th>
+                <th onclick='sortTable(this)'>Litigation</th>
+                <th onclick='sortTable(this)'>Name</th>
+                <th onclick='sortTable(this)'>Entity</th>
+                <th onclick='sortTable(this)'>Task</th>
+                <th onclick='sortTable(this)'>Status</th>
+                <th onclick='sortTable(this)'>Due Date</th>
+                <th onclick='sortTable(this)'>Pending From</th>
             </tr>
         </thead>
         <tbody id="taskTableBody">
