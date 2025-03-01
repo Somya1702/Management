@@ -81,7 +81,7 @@ def home():
         <input type="text" id="entity" placeholder="Entity">
         <input type="text" id="task" placeholder="Task">
         <input type="text" id="status" placeholder="Status">
-        <input type="text" id="due_date" placeholder="Due Date (dd-mm-yyyy)" placeholder="Due Date">
+        <input type="date" id="due_date" placeholder="Due Date" placeholder="Due Date">
         <input type="text" id="pending_from" placeholder="Pending From">
         <button onclick="addTask()">Save Task</button>
     </div>
