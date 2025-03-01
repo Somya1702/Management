@@ -13,12 +13,17 @@ app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{db_path}"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
 
-# Task Model
+# Task Model with New Columns
 class Task(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(200), nullable=False)
-    description = db.Column(db.Text, nullable=True)
-    completed = db.Column(db.Boolean, default=False)
+    id = db.Column(db.Integer, primary_key=True)  # Auto-incremented S.No.
+    litigation = db.Column(db.String(200), nullable=False)
+    name = db.Column(db.String(200), nullable=False)
+    entity = db.Column(db.String(200), nullable=False)
+    task = db.Column(db.String(300), nullable=False)
+    status = db.Column(db.String(100), nullable=False, default="Pending")
+    due_date = db.Column(db.String(100), nullable=True)
+    pending_from = db.Column(db.String(200), nullable=True)
+    document_link = db.Column(db.String(500), nullable=True)
 
 # Create the database tables
 with app.app_context():
@@ -34,20 +39,45 @@ def home():
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Task Manager</title>
     <style>
-        body { font-family: Arial, sans-serif; max-width: 600px; margin: auto; text-align: center; }
-        input, button { padding: 10px; margin: 5px; font-size: 16px; }
-        .task { padding: 10px; border-bottom: 1px solid #ddd; display: flex; justify-content: space-between; align-items: center; }
-        .completed { text-decoration: line-through; color: gray; }
-        .buttons { display: flex; gap: 10px; }
+        body { font-family: Arial, sans-serif; max-width: 90%; margin: auto; text-align: center; }
+        input, button { padding: 8px; margin: 5px; font-size: 14px; width: 180px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 10px; border: 1px solid #ddd; text-align: left; }
+        th { background: #f4f4f4; }
+        .buttons { display: flex; gap: 10px; justify-content: center; }
     </style>
 </head>
 <body>
     <h1>Task Manager</h1>
-    <input type="text" id="taskTitle" placeholder="Task title">
-    <input type="text" id="taskDesc" placeholder="Task description">
+    <input type="text" id="litigation" placeholder="Litigation">
+    <input type="text" id="name" placeholder="Name">
+    <input type="text" id="entity" placeholder="Entity">
+    <input type="text" id="task" placeholder="Task">
+    <input type="text" id="status" placeholder="Status (Pending/In Progress/Completed)">
+    <input type="date" id="due_date" placeholder="Due Date">
+    <input type="text" id="pending_from" placeholder="Pending From">
+    <input type="text" id="document_link" placeholder="Document Link">
     <button onclick="addTask()">Add Task</button>
-    <h2>Tasks</h2>
-    <div id="taskList"></div>
+
+    <h2>Task List</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>S.No.</th>
+                <th>Litigation</th>
+                <th>Name</th>
+                <th>Entity</th>
+                <th>Task</th>
+                <th>Status</th>
+                <th>Due Date</th>
+                <th>Pending From</th>
+                <th>Document Link</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="taskList"></tbody>
+    </table>
+
     <script>
         const API_URL = "/tasks";
 
@@ -55,16 +85,22 @@ def home():
             try {
                 const response = await fetch(API_URL);
                 const tasks = await response.json();
-                document.getElementById("taskList").innerHTML = tasks.map(task => `
-                    <div class="task ${task.completed ? 'completed' : ''}">
-                        <span>${task.title}: ${task.description}</span>
-                        <div class="buttons">
-                            <button onclick="toggleTask(${task.id}, ${task.completed})">
-                                ${task.completed ? 'Undo' : 'Complete'}
-                            </button>
+                document.getElementById("taskList").innerHTML = tasks.map((task, index) => `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${task.litigation}</td>
+                        <td>${task.name}</td>
+                        <td>${task.entity}</td>
+                        <td>${task.task}</td>
+                        <td>${task.status}</td>
+                        <td>${task.due_date || 'N/A'}</td>
+                        <td>${task.pending_from || 'N/A'}</td>
+                        <td><a href="${task.document_link}" target="_blank">${task.document_link ? 'View' : 'N/A'}</a></td>
+                        <td class="buttons">
+                            <button onclick="updateTask(${task.id})">Edit</button>
                             <button onclick="confirmDelete(${task.id})">Delete</button>
-                        </div>
-                    </div>
+                        </td>
+                    </tr>
                 `).join("");
             } catch (error) {
                 console.error("Error fetching tasks:", error);
@@ -72,13 +108,17 @@ def home():
         }
 
         async function addTask() {
-            const titleInput = document.getElementById("taskTitle");
-            const descInput = document.getElementById("taskDesc");
-            const title = titleInput.value.trim();
-            const description = descInput.value.trim();
+            const litigation = document.getElementById("litigation").value;
+            const name = document.getElementById("name").value;
+            const entity = document.getElementById("entity").value;
+            const task = document.getElementById("task").value;
+            const status = document.getElementById("status").value || "Pending";
+            const due_date = document.getElementById("due_date").value;
+            const pending_from = document.getElementById("pending_from").value;
+            const document_link = document.getElementById("document_link").value;
 
-            if (!title) {
-                alert("Task title is required!");
+            if (!litigation || !name || !entity || !task) {
+                alert("Please fill in all required fields!");
                 return;
             }
 
@@ -86,26 +126,11 @@ def home():
                 await fetch(API_URL, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ title, description })
+                    body: JSON.stringify({ litigation, name, entity, task, status, due_date, pending_from, document_link })
                 });
                 fetchTasks();
-                titleInput.value = "";  // Clear title input
-                descInput.value = "";   // Clear description input
             } catch (error) {
                 console.error("Error adding task:", error);
-            }
-        }
-
-        async function toggleTask(id, completed) {
-            try {
-                await fetch(`${API_URL}/${id}`, {
-                    method: "PUT",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ completed: !completed })
-                });
-                fetchTasks();
-            } catch (error) {
-                console.error("Error updating task:", error);
             }
         }
 
@@ -130,65 +155,29 @@ def home():
 </body>
 </html>''')
 
-# Get All Tasks (API)
+# API Routes
 @app.route("/tasks", methods=["GET"])
 def get_tasks():
     tasks = Task.query.all()
-    return jsonify([{
-        "id": task.id, 
-        "title": task.title, 
-        "description": task.description, 
-        "completed": task.completed
-    } for task in tasks])
+    return jsonify([{ "id": task.id, "litigation": task.litigation, "name": task.name, "entity": task.entity, 
+                      "task": task.task, "status": task.status, "due_date": task.due_date, "pending_from": task.pending_from, 
+                      "document_link": task.document_link} for task in tasks])
 
-# Add a New Task (API)
 @app.route("/tasks", methods=["POST"])
 def add_task():
     data = request.json
-    if "title" not in data or not data["title"].strip():
-        return jsonify({"error": "Title is required"}), 400
-    
-    new_task = Task(title=data["title"], description=data.get("description", ""))
+    new_task = Task(**data)
     db.session.add(new_task)
     db.session.commit()
-    
-    return jsonify({"message": "Task added!", "task": {
-        "id": new_task.id, 
-        "title": new_task.title, 
-        "description": new_task.description, 
-        "completed": new_task.completed
-    }})
+    return jsonify({"message": "Task added!"})
 
-# Update a Task (API)
-@app.route("/tasks/<int:task_id>", methods=["PUT"])
-def update_task(task_id):
-    task = Task.query.get(task_id)
-    if not task:
-        return jsonify({"error": "Task not found!"}), 404
-
-    data = request.json
-    task.title = data.get("title", task.title)
-    task.description = data.get("description", task.description)
-    task.completed = data.get("completed", task.completed)
-    db.session.commit()
-    
-    return jsonify({"message": "Task updated!", "task": {
-        "id": task.id, 
-        "title": task.title, 
-        "description": task.description, 
-        "completed": task.completed
-    }})
-
-# Delete a Task (API)
 @app.route("/tasks/<int:task_id>", methods=["DELETE"])
 def delete_task(task_id):
     task = Task.query.get(task_id)
     if not task:
         return jsonify({"error": "Task not found!"}), 404
-
     db.session.delete(task)
     db.session.commit()
-    
     return jsonify({"message": "Task deleted!"})
 
 # Run Flask App
