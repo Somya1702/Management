@@ -27,7 +27,7 @@ def home():
     </style>
     <script>
         function showTaskForm() {
-            document.getElementById("taskForm").style.display = "block";
+            document.getElementById("taskForm").style.display = "flex";
         }
         
         function addTask() {
