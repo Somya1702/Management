@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify, render_template_string
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 import os
+from datetime import datetime
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -21,7 +22,7 @@ class Task(db.Model):
     entity = db.Column(db.String(200), nullable=False)
     task = db.Column(db.String(300), nullable=False)
     status = db.Column(db.String(100), nullable=False, default="Pending")
-    due_date = db.Column(db.String(100), nullable=True)
+    due_date = db.Column(db.String(100), nullable=True)  # Will store as `dd-MMM-yyyy`
     pending_from = db.Column(db.String(200), nullable=True)
     document_link = db.Column(db.String(500), nullable=True)
 
@@ -45,19 +46,25 @@ def home():
         th, td { padding: 10px; border: 1px solid #ddd; text-align: left; }
         th { background: #f4f4f4; }
         .buttons { display: flex; gap: 10px; justify-content: center; }
+        #taskForm { display: none; margin-top: 20px; }
     </style>
 </head>
 <body>
     <h1>Task Manager</h1>
-    <input type="text" id="litigation" placeholder="Litigation">
-    <input type="text" id="name" placeholder="Name">
-    <input type="text" id="entity" placeholder="Entity">
-    <input type="text" id="task" placeholder="Task">
-    <input type="text" id="status" placeholder="Status (Pending/In Progress/Completed)">
-    <input type="date" id="due_date" placeholder="Due Date">
-    <input type="text" id="pending_from" placeholder="Pending From">
-    <input type="text" id="document_link" placeholder="Document Link">
-    <button onclick="addTask()">Add Task</button>
+
+    <button onclick="showTaskForm()">Add New Task</button>
+
+    <div id="taskForm">
+        <input type="text" id="litigation" placeholder="Litigation">
+        <input type="text" id="name" placeholder="Name">
+        <input type="text" id="entity" placeholder="Entity">
+        <input type="text" id="task" placeholder="Task">
+        <input type="text" id="status" placeholder="Status (Pending/In Progress/Completed)">
+        <input type="date" id="due_date" placeholder="Due Date">
+        <input type="text" id="pending_from" placeholder="Pending From">
+        <input type="text" id="document_link" placeholder="Document Link">
+        <button onclick="addTask()">Save Task</button>
+    </div>
 
     <h2>Task List</h2>
     <table>
@@ -81,6 +88,10 @@ def home():
     <script>
         const API_URL = "/tasks";
 
+        function showTaskForm() {
+            document.getElementById("taskForm").style.display = "block";
+        }
+
         async function fetchTasks() {
             try {
                 const response = await fetch(API_URL);
@@ -97,7 +108,6 @@ def home():
                         <td>${task.pending_from || 'N/A'}</td>
                         <td><a href="${task.document_link}" target="_blank">${task.document_link ? 'View' : 'N/A'}</a></td>
                         <td class="buttons">
-                            <button onclick="updateTask(${task.id})">Edit</button>
                             <button onclick="confirmDelete(${task.id})">Delete</button>
                         </td>
                     </tr>
@@ -129,6 +139,7 @@ def home():
                     body: JSON.stringify({ litigation, name, entity, task, status, due_date, pending_from, document_link })
                 });
                 fetchTasks();
+                document.getElementById("taskForm").style.display = "none";
             } catch (error) {
                 console.error("Error adding task:", error);
             }
@@ -160,25 +171,23 @@ def home():
 def get_tasks():
     tasks = Task.query.all()
     return jsonify([{ "id": task.id, "litigation": task.litigation, "name": task.name, "entity": task.entity, 
-                      "task": task.task, "status": task.status, "due_date": task.due_date, "pending_from": task.pending_from, 
+                      "task": task.task, "status": task.status, "due_date": format_date(task.due_date), "pending_from": task.pending_from, 
                       "document_link": task.document_link} for task in tasks])
 
 @app.route("/tasks", methods=["POST"])
 def add_task():
     data = request.json
+    if data["due_date"]:
+        data["due_date"] = format_date(data["due_date"])
     new_task = Task(**data)
     db.session.add(new_task)
     db.session.commit()
     return jsonify({"message": "Task added!"})
 
-@app.route("/tasks/<int:task_id>", methods=["DELETE"])
-def delete_task(task_id):
-    task = Task.query.get(task_id)
-    if not task:
-        return jsonify({"error": "Task not found!"}), 404
-    db.session.delete(task)
-    db.session.commit()
-    return jsonify({"message": "Task deleted!"})
+def format_date(date_str):
+    if date_str:
+        return datetime.strptime(date_str, "%Y-%m-%d").strftime("%d-%b-%Y")
+    return None
 
 # Run Flask App
 if __name__ == "__main__":
