@@ -39,6 +39,18 @@ def home():
             const dueDate = document.getElementById("due_date").value;
             const pendingFrom = document.getElementById("pending_from").value;
             
+            if (!litigation || !name || !entity || !task || !status || !dueDate || !pendingFrom) {
+                alert("All fields are required! Please fill in all details.");
+                return;
+            }
+            const litigation = document.getElementById("litigation").value;
+            const name = document.getElementById("name").value;
+            const entity = document.getElementById("entity").value;
+            const task = document.getElementById("task").value;
+            const status = document.getElementById("status").value;
+            const dueDate = document.getElementById("due_date").value;
+            const pendingFrom = document.getElementById("pending_from").value;
+            
             fetch("/add_task", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
