@@ -23,11 +23,11 @@ def home():
         table { width: 80%; margin: auto; border-collapse: collapse; margin-top: 20px; }
         th, td { padding: 10px; border: 1px solid #ddd; text-align: center; }
         th { background: #f4f4f4; }
-        #taskForm { display: none; margin-top: 20px; }
+        #taskForm { display: none; flex-direction: column; align-items: center; margin-top: 20px; }
     </style>
     <script>
         function showTaskForm() {
-            document.getElementById("taskForm").style.display = "flex";
+            document.getElementById("taskForm").style.display = "block";
         }
         
         function addTask() {
