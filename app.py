@@ -14,7 +14,7 @@ app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{db_path}"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
 
-# Task Model with New Columns
+# Task Model with Updated Columns
 class Task(db.Model):
     id = db.Column(db.Integer, primary_key=True)  # Auto-incremented S.No.
     litigation = db.Column(db.String(200), nullable=False)
@@ -29,6 +29,12 @@ class Task(db.Model):
 # Create the database tables
 with app.app_context():
     db.create_all()
+
+# Function to Format Date to `dd-MMM-yyyy`
+def format_date(date_str):
+    if date_str:
+        return datetime.strptime(date_str, "%Y-%m-%d").strftime("%d-%b-%Y")
+    return None
 
 # Serve Frontend (HTML Page)
 @app.route("/", methods=["GET"])
