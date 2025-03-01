@@ -1,8 +1,10 @@
-from flask import Flask, render_template_string
+from flask import Flask, render_template_string, request, jsonify
 
 app = Flask(__name__)
 
-@app.route("/")
+tasks = []  # In-memory storage for tasks
+
+@app.route("/", methods=["GET"])
 def home():
     return render_template_string("""<!DOCTYPE html>
 <html lang="en">
@@ -21,6 +23,46 @@ def home():
         function showTaskForm() {
             document.getElementById("taskForm").style.display = "block";
         }
+        
+        function addTask() {
+            const litigation = document.getElementById("litigation").value;
+            const name = document.getElementById("name").value;
+            const entity = document.getElementById("entity").value;
+            const task = document.getElementById("task").value;
+            const status = document.getElementById("status").value;
+            const dueDate = document.getElementById("due_date").value;
+            const pendingFrom = document.getElementById("pending_from").value;
+            
+            fetch("/add_task", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ litigation, name, entity, task, status, dueDate, pendingFrom })
+            }).then(response => response.json()).then(() => {
+                loadTasks();
+                document.getElementById("taskForm").reset();
+            });
+        }
+        
+        function loadTasks() {
+            fetch("/tasks").then(response => response.json()).then(data => {
+                let tableBody = document.getElementById("taskTableBody");
+                tableBody.innerHTML = "";
+                data.forEach((task, index) => {
+                    let row = `<tr>
+                        <td>${index + 1}</td>
+                        <td>${task.litigation}</td>
+                        <td>${task.name}</td>
+                        <td>${task.entity}</td>
+                        <td>${task.task}</td>
+                        <td>${task.status}</td>
+                        <td>${task.dueDate}</td>
+                        <td>${task.pendingFrom}</td>
+                    </tr>`;
+                    tableBody.innerHTML += row;
+                });
+            });
+        }
+        window.onload = loadTasks;
     </script>
 </head>
 <body>
@@ -28,14 +70,14 @@ def home():
     <button onclick="showTaskForm()">Add New Task</button>
     
     <div id="taskForm">
-        <input type="text" placeholder="Litigation">
-        <input type="text" placeholder="Name">
-        <input type="text" placeholder="Entity">
-        <input type="text" placeholder="Task">
-        <input type="text" placeholder="Status">
-        <input type="date" placeholder="Due Date">
-        <input type="text" placeholder="Pending From">
-        <button>Save Task</button>
+        <input type="text" id="litigation" placeholder="Litigation">
+        <input type="text" id="name" placeholder="Name">
+        <input type="text" id="entity" placeholder="Entity">
+        <input type="text" id="task" placeholder="Task">
+        <input type="text" id="status" placeholder="Status">
+        <input type="date" id="due_date" placeholder="Due Date">
+        <input type="text" id="pending_from" placeholder="Pending From">
+        <button onclick="addTask()">Save Task</button>
     </div>
     
     <table>
@@ -51,12 +93,22 @@ def home():
                 <th>Pending From</th>
             </tr>
         </thead>
-        <tbody>
-            <!-- Data rows will be inserted here -->
+        <tbody id="taskTableBody">
+            <!-- Data rows will be inserted here dynamically -->
         </tbody>
     </table>
 </body>
 </html>""")
+
+@app.route("/add_task", methods=["POST"])
+def add_task():
+    data = request.json
+    tasks.append(data)
+    return jsonify({"message": "Task added successfully!"})
+
+@app.route("/tasks", methods=["GET"])
+def get_tasks():
+    return jsonify(tasks)
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
