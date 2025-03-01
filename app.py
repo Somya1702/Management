@@ -154,14 +154,14 @@ def home():
     <table>
         <thead>
             <tr>
-                <th><button onclick='sortTable(this.parentNode)'>⇅</button> S.No.</th>
-                <th><button onclick='sortTable(this.parentNode)'>⇅</button> Litigation</th>
-                <th><button onclick='sortTable(this.parentNode)'>⇅</button> Name</th>
-                <th><button onclick='sortTable(this.parentNode)'>⇅</button> Entity</th>
-                <th><button onclick='sortTable(this.parentNode)'>⇅</button> Task</th>
-                <th><button onclick='sortTable(this.parentNode)'>⇅</button> Status</th>
-                <th><button onclick='sortTable(this.parentNode)'>⇅</button> Due Date</th>
-                <th><button onclick='sortTable(this.parentNode)'>⇅</button> Pending From</th>
+                <th>S.No. <button onclick='sortTable(this.parentNode)'>⇅</button></th>
+                <th>Litigation <button onclick='sortTable(this.parentNode)'>⇅</button></th>
+                <th>Name <button onclick='sortTable(this.parentNode)'>⇅</button></th>
+                <th>Entity <button onclick='sortTable(this.parentNode)'>⇅</button></th>
+                <th>Task <button onclick='sortTable(this.parentNode)'>⇅</button></th>
+                <th>Status <button onclick='sortTable(this.parentNode)'>⇅</button></th>
+                <th>Due Date <button onclick='sortTable(this.parentNode)'>⇅</button></th>
+                <th>Pending From <button onclick='sortTable(this.parentNode)'>⇅</button></th>
             </tr>
         </thead>
         <tbody id="taskTableBody">
