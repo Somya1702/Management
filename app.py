@@ -49,6 +49,23 @@ def home():
             
             table.innerHTML = "";
             rows.forEach(row => table.appendChild(row));
+        } else {
+                sortOrder = {}; // Reset previous sort order
+                sortOrder[columnIndex] = true; // Default to ascending
+            }
+            currentSortedColumn = columnIndex;
+            
+            rows.sort((a, b) => {
+                let cellA = a.children[columnIndex].innerText.toLowerCase();
+                let cellB = b.children[columnIndex].innerText.toLowerCase();
+                if (!isNaN(cellA) && !isNaN(cellB)) {
+                    return sortOrder[columnIndex] ? cellA - cellB : cellB - cellA;
+                }
+                return sortOrder[columnIndex] ? cellA.localeCompare(cellB) : cellB.localeCompare(cellA);
+            });
+            
+            table.innerHTML = "";
+            rows.forEach(row => table.appendChild(row));
         }
         });
             
@@ -137,14 +154,14 @@ def home():
     <table>
         <thead>
             <tr>
-                <th onclick='sortTable(this)'>S.No.</th>
-                <th onclick='sortTable(this)'>Litigation</th>
-                <th onclick='sortTable(this)'>Name</th>
-                <th onclick='sortTable(this)'>Entity</th>
-                <th onclick='sortTable(this)'>Task</th>
-                <th onclick='sortTable(this)'>Status</th>
-                <th onclick='sortTable(this)'>Due Date</th>
-                <th onclick='sortTable(this)'>Pending From</th>
+                <th><button onclick='sortTable(this.parentNode)'>⇅</button> S.No.</th>
+                <th><button onclick='sortTable(this.parentNode)'>⇅</button> Litigation</th>
+                <th><button onclick='sortTable(this.parentNode)'>⇅</button> Name</th>
+                <th><button onclick='sortTable(this.parentNode)'>⇅</button> Entity</th>
+                <th><button onclick='sortTable(this.parentNode)'>⇅</button> Task</th>
+                <th><button onclick='sortTable(this.parentNode)'>⇅</button> Status</th>
+                <th><button onclick='sortTable(this.parentNode)'>⇅</button> Due Date</th>
+                <th><button onclick='sortTable(this.parentNode)'>⇅</button> Pending From</th>
             </tr>
         </thead>
         <tbody id="taskTableBody">
