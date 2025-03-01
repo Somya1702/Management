@@ -24,18 +24,32 @@ def home():
         th, td { padding: 10px; border: 1px solid #ddd; text-align: center; }
         th { background: #f4f4f4; }
         #taskForm { display: none; flex-direction: column; align-items: center; margin-top: 20px; }
-            let sortOrder = {};
+            let sortOrder = {}; let currentSortedColumn = null;
         function sortTable(header) {
             let columnIndex = Array.from(header.parentNode.children).indexOf(header);
             let table = document.querySelector("table tbody");
             let rows = Array.from(table.querySelectorAll("tr"));
             
-            sortOrder[columnIndex] = !sortOrder[columnIndex];
+            if (currentSortedColumn === columnIndex) {
+                sortOrder[columnIndex] = !sortOrder[columnIndex];
+            } else {
+                sortOrder = {}; // Reset previous sort order
+                sortOrder[columnIndex] = true; // Default to ascending
+            }
+            currentSortedColumn = columnIndex;
+            
             rows.sort((a, b) => {
                 let cellA = a.children[columnIndex].innerText.toLowerCase();
                 let cellB = b.children[columnIndex].innerText.toLowerCase();
+                if (!isNaN(cellA) && !isNaN(cellB)) {
+                    return sortOrder[columnIndex] ? cellA - cellB : cellB - cellA;
+                }
                 return sortOrder[columnIndex] ? cellA.localeCompare(cellB) : cellB.localeCompare(cellA);
             });
+            
+            table.innerHTML = "";
+            rows.forEach(row => table.appendChild(row));
+        });
             
             table.innerHTML = "";
             rows.forEach(row => table.appendChild(row));
