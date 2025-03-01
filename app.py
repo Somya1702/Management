@@ -16,8 +16,8 @@ db = SQLAlchemy(app)
 
 # Task Model with Updated Columns
 class Task(db.Model):
-    id = db.Column(db.Integer, primary_key=True)  # Auto-incremented S.No.
-    litigation = db.Column(db.String(200), nullable=False)
+    id = db.Column(db.Integer, primary_key=True)
+    litigation = db.Column(db.Boolean, default=False)  # Checkbox for Litigation
     name = db.Column(db.String(200), nullable=False)
     entity = db.Column(db.String(200), nullable=False)
     task = db.Column(db.String(300), nullable=False)
@@ -39,7 +39,7 @@ def format_date(date_str):
 # Serve Frontend (HTML Page)
 @app.route("/", methods=["GET"])
 def home():
-    return render_template_string('''<!DOCTYPE html>
+    return render_template_string("""<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -61,7 +61,7 @@ def home():
     <button onclick="showTaskForm()">Add New Task</button>
 
     <div id="taskForm">
-        <input type="text" id="litigation" placeholder="Litigation">
+        <label><input type="checkbox" id="litigation"> Litigation</label>
         <input type="text" id="name" placeholder="Name">
         <input type="text" id="entity" placeholder="Entity">
         <input type="text" id="task" placeholder="Task">
@@ -98,33 +98,8 @@ def home():
             document.getElementById("taskForm").style.display = "block";
         }
 
-        async function fetchTasks() {
-            try {
-                const response = await fetch(API_URL);
-                const tasks = await response.json();
-                document.getElementById("taskList").innerHTML = tasks.map((task, index) => `
-                    <tr>
-                        <td>${index + 1}</td>
-                        <td>${task.litigation}</td>
-                        <td>${task.name}</td>
-                        <td>${task.entity}</td>
-                        <td>${task.task}</td>
-                        <td>${task.status}</td>
-                        <td>${task.due_date || 'N/A'}</td>
-                        <td>${task.pending_from || 'N/A'}</td>
-                        <td><a href="${task.document_link}" target="_blank">${task.document_link ? 'View' : 'N/A'}</a></td>
-                        <td class="buttons">
-                            <button onclick="confirmDelete(${task.id})">Delete</button>
-                        </td>
-                    </tr>
-                `).join("");
-            } catch (error) {
-                console.error("Error fetching tasks:", error);
-            }
-        }
-
         async function addTask() {
-            const litigation = document.getElementById("litigation").value;
+            const litigation = document.getElementById("litigation").checked;
             const name = document.getElementById("name").value;
             const entity = document.getElementById("entity").value;
             const task = document.getElementById("task").value;
@@ -133,7 +108,7 @@ def home():
             const pending_from = document.getElementById("pending_from").value;
             const document_link = document.getElementById("document_link").value;
 
-            if (!litigation || !name || !entity || !task) {
+            if (!name || !entity || !task) {
                 alert("Please fill in all required fields!");
                 return;
             }
@@ -145,45 +120,16 @@ def home():
                     body: JSON.stringify({ litigation, name, entity, task, status, due_date, pending_from, document_link })
                 });
                 fetchTasks();
-                clearFields();
-                document.getElementById("taskForm").style.display = "none";
+                document.getElementById("taskForm").reset();
             } catch (error) {
                 console.error("Error adding task:", error);
-            }
-        }
-
-        function clearFields() {
-            document.getElementById("litigation").value = "";
-            document.getElementById("name").value = "";
-            document.getElementById("entity").value = "";
-            document.getElementById("task").value = "";
-            document.getElementById("status").value = "";
-            document.getElementById("due_date").value = "";
-            document.getElementById("pending_from").value = "";
-            document.getElementById("document_link").value = "";
-        }
-
-        function confirmDelete(id) {
-            const confirmation = confirm("Are you sure you want to delete this task?");
-            if (confirmation) {
-                deleteTask(id);
-            }
-        }
-
-        async function deleteTask(id) {
-            try {
-                await fetch(`${API_URL}/${id}`, { method: "DELETE" });
-                fetchTasks();
-            } catch (error) {
-                console.error("Error deleting task:", error);
             }
         }
 
         fetchTasks();
     </script>
 </body>
-</html>''')
+</html>""")
 
-# Run Flask App
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
