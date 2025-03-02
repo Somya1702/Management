@@ -1,4 +1,39 @@
-fetch("/add_task", {
+function addTask() {
+            const entryDate = new Date().toLocaleDateString('en-GB', {
+                day: '2-digit', month: 'short', year: 'numeric'
+            }).replace(/ /g, '-');
+            const litigation = document.getElementById("litigation").value;
+            const name = document.getElementById("name").value;
+            const entity = document.getElementById("entity").value;
+            const task = document.getElementById("task").value;
+            const status = document.getElementById("status").value;
+            const dueDate = document.getElementById("due_date").value;
+            const pendingFrom = document.getElementById("pending_from").value;
+            
+            if (!litigation || !name || !entity || !task || !status || !dueDate || !pendingFrom) {
+                alert("All fields are required! Please fill in all details.");
+                return;
+            }
+            
+            fetch("/add_task", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ entryDate, litigation, name, entity, task, status, dueDate, pendingFrom })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message === "Task added successfully!") {
+                    loadTasks();
+                    document.querySelectorAll("thead input").forEach(input => input.value = "");
+                } else {
+                    alert("Failed to save task. Please try again.");
+                }
+            })
+            .catch(error => {
+                console.error("Error saving task:", error);
+                alert("Error saving task. Please check console logs.");
+            });
+        }
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ entryDate, litigation, name, entity, task, status, dueDate, pendingFrom })
