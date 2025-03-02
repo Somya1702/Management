@@ -179,7 +179,7 @@ def home():
             </tr>
             <tr>
                 <td><button onclick='enableSearch()'>Search</button></td>
-                <td><input type='date' id='entry_date'></td>
+                
                 <td><input type="text" id="litigation"></td>
                 <td><input type="text" id="name"></td>
                 <td><input type="text" id="entity"></td>
