@@ -20,6 +20,7 @@ def home():
     <title>Task Manager</title>
     <style>
         #taskForm { display: none; flex-direction: column; align-items: center; margin-top: 20px; }
+        #taskForm { display: none; flex-direction: column; align-items: center; margin-top: 20px; }
         body { font-family: Arial, sans-serif; text-align: center; margin-top: 5%; }
         table { width: 80%; margin: auto; border-collapse: collapse; margin-top: 20px; }
         th, td { padding: 10px; border: 1px solid #ddd; text-align: center; }
@@ -27,7 +28,7 @@ def home():
         #taskForm { display: none; flex-direction: column; align-items: center; margin-top: 20px; }
             function showTaskForm() {
             let form = document.getElementById("taskForm");
-            form.style.display = (form.style.display === "none" || form.style.display === "") ? "block" : "none";
+            form.style.display = (form.style.display === "none" || form.style.display === "") ? "flex" : "none";
         }
         
         function addTask() {
