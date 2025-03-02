@@ -91,6 +91,36 @@ def home():
             });
         }
         window.onload = loadTasks;
+            function enableSearch() {
+            document.querySelectorAll("thead input").forEach(input => {
+                input.addEventListener("input", filterTasks);
+            });
+        }
+        
+        function filterTasks() {
+            let filters = {
+                litigation: document.getElementById("litigation").value.toLowerCase(),
+                name: document.getElementById("name").value.toLowerCase(),
+                entity: document.getElementById("entity").value.toLowerCase(),
+                task: document.getElementById("task").value.toLowerCase(),
+                status: document.getElementById("status").value.toLowerCase(),
+                dueDate: document.getElementById("due_date").value,
+                pendingFrom: document.getElementById("pending_from").value.toLowerCase()
+            };
+            
+            document.querySelectorAll("#taskTableBody tr").forEach(row => {
+                let cells = row.children;
+                let show = true;
+                if (filters.litigation && !cells[2].innerText.toLowerCase().includes(filters.litigation)) show = false;
+                if (filters.name && !cells[3].innerText.toLowerCase().includes(filters.name)) show = false;
+                if (filters.entity && !cells[4].innerText.toLowerCase().includes(filters.entity)) show = false;
+                if (filters.task && !cells[5].innerText.toLowerCase().includes(filters.task)) show = false;
+                if (filters.status && !cells[6].innerText.toLowerCase().includes(filters.status)) show = false;
+                if (filters.dueDate && cells[7].innerText !== filters.dueDate) show = false;
+                if (filters.pendingFrom && !cells[8].innerText.toLowerCase().includes(filters.pendingFrom)) show = false;
+                row.style.display = show ? "" : "none";
+            });
+        }
     </script>
 </head>
 <body>
@@ -110,7 +140,7 @@ def home():
                 <th>Action</th>
             </tr>
             <tr>
-                <td><button onclick='activateSearch()'>Search</button></td>
+                <td><button onclick='enableSearch()'>Search</button></td>
                 <td></td>
                 <td><input type="text" id="litigation"></td>
                 <td><input type="text" id="name"></td>
