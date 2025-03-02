@@ -3,7 +3,7 @@ from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///tasks.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///C:/Users/team0/Desktop/Management/tasks.db'
 db = SQLAlchemy(app)
 
 class Task(db.Model):
@@ -63,6 +63,17 @@ def home():
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ entryDate, litigation, name, entity, task, status, dueDate, pendingFrom })
+            }).then(response => response.json()).then((data) => {
+                if (data.message === "Task added successfully!") {
+                    loadTasks();
+                    document.querySelectorAll("thead input").forEach(input => input.value = "");
+                } else {
+                    alert("Failed to save task. Please try again.");
+                }
+            }).catch(error => {
+                console.error("Error saving task:", error);
+                alert("Error saving task. Please check console logs.");
+            });
             }).then(response => response.json()).then(() => {
                 loadTasks();
                 document.querySelectorAll("thead input").forEach(input => input.value = "");
