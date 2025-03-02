@@ -1,14 +1,30 @@
 from flask import Flask, render_template_string, request, jsonify
 from datetime import datetime
+from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///tasks.db'
+db = SQLAlchemy(app)
 
-tasks = []  # In-memory storage for tasks
+class Task(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    entry_date = db.Column(db.String(12), nullable=False)
+    litigation = db.Column(db.String(200), nullable=False)
+    name = db.Column(db.String(200), nullable=False)
+    entity = db.Column(db.String(200), nullable=False)
+    task = db.Column(db.String(500), nullable=False)
+    status = db.Column(db.String(100), nullable=False)
+    due_date = db.Column(db.String(12), nullable=False)
+    pending_from = db.Column(db.String(200), nullable=False)
 
 def format_date(date_str):
     if date_str:
         return datetime.strptime(date_str, "%Y-%m-%d").strftime("%d-%b-%Y")
     return ""
+
+@app.before_first_request
+def create_tables():
+    db.create_all()
 
 @app.route("/", methods=["GET"])
 def home():
@@ -50,13 +66,7 @@ def home():
                 body: JSON.stringify({ entryDate, litigation, name, entity, task, status, dueDate, pendingFrom })
             }).then(response => response.json()).then(() => {
                 loadTasks();
-                document.getElementById("litigation").value = "";
-                document.getElementById("name").value = "";
-                document.getElementById("entity").value = "";
-                document.getElementById("task").value = "";
-                document.getElementById("status").value = "";
-                document.getElementById("due_date").value = "";
-                document.getElementById("pending_from").value = "";
+                document.querySelectorAll("thead input").forEach(input => input.value = "");
             });
         }
         
@@ -67,51 +77,21 @@ def home():
                 data.forEach((task, index) => {
                     let serialNo = data.length - index;
                     let row = `<tr>
-                        <td>${index + 1}</td>
-                        <td>${task.entryDate}</td>
+                        <td>${serialNo}</td>
+                        <td>${task.entry_date}</td>
                         <td>${task.litigation}</td>
                         <td>${task.name}</td>
                         <td>${task.entity}</td>
                         <td>${task.task}</td>
                         <td>${task.status}</td>
-                        <td>${task.dueDate}</td>
-                        <td>${task.pendingFrom}</td>
+                        <td>${task.due_date}</td>
+                        <td>${task.pending_from}</td>
                     </tr>`;
                     tableBody.innerHTML += row;
                 });
             });
         }
         window.onload = loadTasks;
-            function activateSearch() {
-            document.querySelectorAll("thead input").forEach(input => {
-                input.addEventListener("input", filterTasks);
-            });
-        }
-        
-        function filterTasks() {
-            let filters = {
-                litigation: document.getElementById("litigation").value.toLowerCase(),
-                name: document.getElementById("name").value.toLowerCase(),
-                entity: document.getElementById("entity").value.toLowerCase(),
-                task: document.getElementById("task").value.toLowerCase(),
-                status: document.getElementById("status").value.toLowerCase(),
-                dueDate: document.getElementById("due_date").value,
-                pendingFrom: document.getElementById("pending_from").value.toLowerCase()
-            };
-            
-            document.querySelectorAll("#taskTableBody tr").forEach(row => {
-                let cells = row.children;
-                let show = true;
-                if (filters.litigation && !cells[2].innerText.toLowerCase().includes(filters.litigation)) show = false;
-                if (filters.name && !cells[3].innerText.toLowerCase().includes(filters.name)) show = false;
-                if (filters.entity && !cells[4].innerText.toLowerCase().includes(filters.entity)) show = false;
-                if (filters.task && !cells[5].innerText.toLowerCase().includes(filters.task)) show = false;
-                if (filters.status && !cells[6].innerText.toLowerCase().includes(filters.status)) show = false;
-                if (filters.dueDate && cells[7].innerText !== filters.dueDate) show = false;
-                if (filters.pendingFrom && !cells[8].innerText.toLowerCase().includes(filters.pendingFrom)) show = false;
-                row.style.display = show ? "" : "none";
-            });
-        }
     </script>
 </head>
 <body>
@@ -144,7 +124,6 @@ def home():
             </tr>
         </thead>
         <tbody id="taskTableBody">
-            <!-- Data rows will be inserted here dynamically -->
         </tbody>
     </table>
 </body>
@@ -153,13 +132,24 @@ def home():
 @app.route("/add_task", methods=["POST"])
 def add_task():
     data = request.json
-    data["dueDate"] = format_date(data["dueDate"])
-    tasks.insert(0, data)
+    new_task = Task(
+        entry_date=data["entryDate"],
+        litigation=data["litigation"],
+        name=data["name"],
+        entity=data["entity"],
+        task=data["task"],
+        status=data["status"],
+        due_date=format_date(data["dueDate"]),
+        pending_from=data["pendingFrom"]
+    )
+    db.session.add(new_task)
+    db.session.commit()
     return jsonify({"message": "Task added successfully!"})
 
 @app.route("/tasks", methods=["GET"])
 def get_tasks():
-    return jsonify(tasks)
+    tasks = Task.query.order_by(Task.id.desc()).all()
+    return jsonify([{ "entry_date": t.entry_date, "litigation": t.litigation, "name": t.name, "entity": t.entity, "task": t.task, "status": t.status, "due_date": t.due_date, "pending_from": t.pending_from } for t in tasks])
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
