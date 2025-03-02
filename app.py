@@ -80,6 +80,19 @@ def home():
             });
         }
         window.onload = loadTasks;
+            let nameSortOrder = true;
+        function sortByName() {
+            let table = document.getElementById("taskTableBody");
+            let rows = Array.from(table.getElementsByTagName("tr"));
+            rows.sort((a, b) => {
+                let nameA = a.children[2].innerText.toLowerCase();
+                let nameB = b.children[2].innerText.toLowerCase();
+                return nameSortOrder ? nameA.localeCompare(nameB) : nameB.localeCompare(nameA);
+            });
+            nameSortOrder = !nameSortOrder;
+            table.innerHTML = "";
+            rows.forEach(row => table.appendChild(row));
+        }
     </script>
 </head>
 <body>
@@ -102,7 +115,7 @@ def home():
             <tr>
                 <th>S.No.</th>
                 <th>Litigation</th>
-                <th>Name</th>
+                <th>Name <button onclick='sortByName()'>⇅</button></th>
                 <th>Entity</th>
                 <th>Task</th>
                 <th>Status</th>
