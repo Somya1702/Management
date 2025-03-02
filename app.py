@@ -1,65 +1,21 @@
-from flask import Flask, render_template_string, request, jsonify
-from datetime import datetime
-from flask_sqlalchemy import SQLAlchemy
-
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///tasks.db'
-db = SQLAlchemy(app)
-
-class Task(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    entry_date = db.Column(db.String(12), nullable=False)
-    litigation = db.Column(db.String(200), nullable=False)
-    name = db.Column(db.String(200), nullable=False)
-    entity = db.Column(db.String(200), nullable=False)
-    task = db.Column(db.String(500), nullable=False)
-    status = db.Column(db.String(100), nullable=False)
-    due_date = db.Column(db.String(12), nullable=False)
-    pending_from = db.Column(db.String(200), nullable=False)
-
-def format_date(date_str):
-    if date_str:
-        return datetime.strptime(date_str, "%Y-%m-%d").strftime("%d-%b-%Y")
-    return ""
-
-with app.app_context():
-    db.create_all()
-
-@app.route("/", methods=["GET"])
-def home():
-    return render_template_string("""<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Task Manager</title>
-    <style>
-        table { border-collapse: collapse; width: 80%; margin: auto; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
-        th { background-color: #f4f4f4; cursor: pointer; }
-        input { width: 95%; padding: 4px; box-sizing: border-box; text-align: center; }
-        button { padding: 4px 8px; cursor: pointer; }
-        body { font-family: Arial, sans-serif; text-align: center; margin-top: 5%; }
-    </style>
-    <script>
-        function addTask() {
-            const entryDate = new Date().toLocaleDateString('en-GB', {
-                day: '2-digit', month: 'short', year: 'numeric'
-            }).replace(/ /g, '-');
-            const litigation = document.getElementById("litigation").value;
-            const name = document.getElementById("name").value;
-            const entity = document.getElementById("entity").value;
-            const task = document.getElementById("task").value;
-            const status = document.getElementById("status").value;
-            const dueDate = document.getElementById("due_date").value;
-            const pendingFrom = document.getElementById("pending_from").value;
-            
-            if (!litigation || !name || !entity || !task || !status || !dueDate || !pendingFrom) {
-                alert("All fields are required! Please fill in all details.");
-                return;
-            }
-            
-            fetch("/add_task", {
+fetch("/add_task", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ entryDate, litigation, name, entity, task, status, dueDate, pendingFrom })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message === "Task added successfully!") {
+                    loadTasks();
+                    document.querySelectorAll("thead input").forEach(input => input.value = "");
+                } else {
+                    alert("Failed to save task. Please try again.");
+                }
+            })
+            .catch(error => {
+                console.error("Error saving task:", error);
+                alert("Error saving task. Please check console logs.");
+            });
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ entryDate, litigation, name, entity, task, status, dueDate, pendingFrom })
