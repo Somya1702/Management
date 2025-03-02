@@ -75,7 +75,22 @@ def home():
                 tableBody.innerHTML = "";
                 data.forEach((task, index) => {
                     let serialNo = data.length - index;
+                    let editButton = `<button onclick='editStatus(this)'>Edit</button>`;
+                    let statusCell = `<td id='status-${task.id}'>${task.status}</td>`;
+                    let serialNo = data.length - index;
                     let row = `<tr>
+                        <td>${serialNo}</td>
+                        <td>${task.entry_date}</td>
+                        <td>${task.litigation}</td>
+                        <td>${task.name}</td>
+                        <td>${task.entity}</td>
+                        <td>${task.task}</td>
+                        ${statusCell}
+                        <td>${task.due_date}</td>
+                        <td>${calculateDays(task.due_date)}</td>
+                        <td>${task.pending_from}</td>
+                        <td>${index > 0 ? editButton : ''}</td>
+                    </tr>`;
                         <td>${serialNo}</td>
                         <td>${task.entry_date}</td>
                         <td>${task.litigation}</td>
@@ -127,6 +142,22 @@ def home():
             const due = new Date(dueDate.split('-').reverse().join('-'));
             const diffTime = due - today;
             return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        }
+            function editStatus(button) {
+            let row = button.parentNode.parentNode;
+            let statusCell = row.cells[6];
+            let currentText = statusCell.innerText;
+            
+            let input = document.createElement("input");
+            input.type = "text";
+            input.value = currentText;
+            input.onblur = function() {
+                statusCell.innerText = input.value;
+            };
+            
+            statusCell.innerText = "";
+            statusCell.appendChild(input);
+            input.focus();
         }
     </script>
 </head>
