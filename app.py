@@ -22,8 +22,7 @@ def format_date(date_str):
         return datetime.strptime(date_str, "%Y-%m-%d").strftime("%d-%b-%Y")
     return ""
 
-@app.before_first_request
-def create_tables():
+with app.app_context():
     db.create_all()
 
 @app.route("/", methods=["GET"])
