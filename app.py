@@ -28,9 +28,10 @@ def home():
     <script>
         function toggleTaskForm() {
             let form = document.getElementById("taskForm");
-            form.style.display = (form.style.display === "none" || form.style.display === "") ? "block" : "none";
+            form.style.display = (form.style.display === "none" || form.style.display === "") ? "flex" : "none";
         }
-            function addTask() {
+        
+        function addTask() {
             const litigation = document.getElementById("litigation").value;
             const name = document.getElementById("name").value;
             const entity = document.getElementById("entity").value;
@@ -80,46 +81,6 @@ def home():
             });
         }
         window.onload = loadTasks;
-            let nameSortOrder = true;
-        function sortByName() {
-            let table = document.getElementById("taskTableBody");
-            let rows = Array.from(table.getElementsByTagName("tr"));
-            rows.sort((a, b) => {
-                let nameA = a.children[2].innerText.toLowerCase();
-                let nameB = b.children[2].innerText.toLowerCase();
-                return nameSortOrder ? nameA.localeCompare(nameB) : nameB.localeCompare(nameA);
-            });
-            nameSortOrder = !nameSortOrder;
-            table.innerHTML = "";
-            rows.forEach(row => table.appendChild(row));
-        }
-            function sortByColumn(index) {
-            let table = document.getElementById("taskTableBody");
-            let rows = Array.from(table.getElementsByTagName("tr"));
-            let sortOrder = table.dataset.sortOrder ? table.dataset.sortOrder === 'asc' : true;
-            
-            if (index === 6) { // Sorting for Due Date
-                rows.sort((a, b) => {
-                    let dateA = new Date(a.children[index].innerText);
-                    let dateB = new Date(b.children[index].innerText);
-                    return sortOrder ? dateA - dateB : dateB - dateA;
-                });
-            } else {
-                rows.sort((a, b) => {
-                    let cellA = a.children[index].innerText.toLowerCase();
-                    let cellB = b.children[index].innerText.toLowerCase();
-                    return sortOrder ? cellA.localeCompare(cellB) : cellB.localeCompare(cellA);
-                });
-            }
-            
-            table.dataset.sortOrder = sortOrder ? 'desc' : 'asc';
-            table.innerHTML = "";
-            rows.forEach(row => table.appendChild(row));
-        });
-            table.dataset.sortOrder = sortOrder ? 'desc' : 'asc';
-            table.innerHTML = "";
-            rows.forEach(row => table.appendChild(row));
-        }
     </script>
 </head>
 <body>
@@ -140,14 +101,14 @@ def home():
     <table>
         <thead>
             <tr>
-                <th>S.No. <button onclick='sortByColumn(0)'>⇅</button></th>
-                <th>Litigation <button onclick='sortByColumn(1)'>⇅</button></th>
-                <th>Name <button onclick='sortByName()'>⇅</button></th>
-                <th>Entity <button onclick='sortByColumn(3)'>⇅</button></th>
-                <th>Task <button onclick='sortByColumn(4)'>⇅</button></th>
-                <th>Status <button onclick='sortByColumn(5)'>⇅</button></th>
-                <th>Due Date <button onclick='sortByColumn(6)'>⇅</button></th>
-                <th>Pending From <button onclick='sortByColumn(7)'>⇅</button></th>
+                <th>S.No.</th>
+                <th>Litigation</th>
+                <th>Name</th>
+                <th>Entity</th>
+                <th>Task</th>
+                <th>Status</th>
+                <th>Due Date</th>
+                <th>Pending From</th>
             </tr>
         </thead>
         <tbody id="taskTableBody">
