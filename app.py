@@ -33,6 +33,23 @@ fetch("/add_task", {
                 console.error("Error saving task:", error);
                 alert("Error saving task. Please check console logs.");
             });
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ entryDate, litigation, name, entity, task, status, dueDate, pendingFrom })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message === "Task added successfully!") {
+                    loadTasks();
+                    document.querySelectorAll("thead input").forEach(input => input.value = "");
+                } else {
+                    alert("Failed to save task. Please try again.");
+                }
+            })
+            .catch(error => {
+                console.error("Error saving task:", error);
+                alert("Error saving task. Please check console logs.");
+            });
             })
             .then(response => response.json())
             .then(data => {
