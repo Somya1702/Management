@@ -30,6 +30,79 @@ def home():
             let form = document.getElementById("taskForm");
             form.style.display = (form.style.display === "none" || form.style.display === "") ? "flex" : "none";
         }
+            function addTask() {
+            const litigation = document.getElementById("litigation").value;
+            const name = document.getElementById("name").value;
+            const entity = document.getElementById("entity").value;
+            const task = document.getElementById("task").value;
+            const status = document.getElementById("status").value;
+            const dueDate = document.getElementById("due_date").value;
+            const pendingFrom = document.getElementById("pending_from").value;
+            
+            if (!litigation || !name || !entity || !task || !status || !dueDate || !pendingFrom) {
+                alert("All fields are required! Please fill in all details.");
+                return;
+            }
+            
+            fetch("/add_task", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ litigation, name, entity, task, status, dueDate, pendingFrom })
+            }).then(response => response.json()).then(() => {
+                loadTasks();
+                document.getElementById("litigation").value = "";
+                document.getElementById("name").value = "";
+                document.getElementById("entity").value = "";
+                document.getElementById("task").value = "";
+                document.getElementById("status").value = "";
+                document.getElementById("due_date").value = "";
+                document.getElementById("pending_from").value = "";
+            });
+        }
+        
+        function loadTasks() {
+            fetch("/tasks").then(response => response.json()).then(data => {
+                let tableBody = document.getElementById("taskTableBody");
+                tableBody.innerHTML = "";
+                data.forEach((task, index) => {
+                    let row = `<tr>
+                        <td>${index + 1}</td>
+                        <td>${task.litigation}</td>
+                        <td>${task.name}</td>
+                        <td>${task.entity}</td>
+                        <td>${task.task}</td>
+                        <td>${task.status}</td>
+                        <td>${task.dueDate}</td>
+                        <td>${task.pendingFrom}</td>
+                    </tr>`;
+                    tableBody.innerHTML += row;
+                });
+            });
+        }
+        
+        function sortByColumn(index) {
+            let table = document.getElementById("taskTableBody");
+            let rows = Array.from(table.getElementsByTagName("tr"));
+            let sortOrder = table.dataset.sortOrder === 'asc' ? 'desc' : 'asc';
+            table.dataset.sortOrder = sortOrder;
+            
+            rows.sort((a, b) => {
+                let cellA = a.children[index].innerText.trim();
+                let cellB = b.children[index].innerText.trim();
+                
+                if (index === 6) { // Sorting by Due Date
+                    cellA = new Date(cellA.split('-').reverse().join('-'));
+                    cellB = new Date(cellB.split('-').reverse().join('-'));
+                    return sortOrder === 'asc' ? cellA - cellB : cellB - cellA;
+                } else {
+                    return sortOrder === 'asc' ? cellA.localeCompare(cellB) : cellB.localeCompare(cellA);
+                }
+            });
+            
+            table.innerHTML = "";
+            rows.forEach(row => table.appendChild(row));
+        }
+        window.onload = loadTasks;
     </script>
 </head>
 <body>
