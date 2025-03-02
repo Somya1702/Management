@@ -19,91 +19,22 @@ def home():
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Task Manager</title>
     <style>
-        #taskForm { display: none; flex-direction: column; align-items: center; margin-top: 20px; }
-        #taskForm { display: none; flex-direction: column; align-items: center; margin-top: 20px; }
-        #taskForm { display: none; flex-direction: column; align-items: center; margin-top: 20px; }
         body { font-family: Arial, sans-serif; text-align: center; margin-top: 5%; }
         table { width: 80%; margin: auto; border-collapse: collapse; margin-top: 20px; }
         th, td { padding: 10px; border: 1px solid #ddd; text-align: center; }
         th { background: #f4f4f4; cursor: pointer; }
         #taskForm { display: none; flex-direction: column; align-items: center; margin-top: 20px; }
-            function showTaskForm() {
-            let form = document.getElementById("taskForm");
-            form.style.display = (form.style.display === "none" || form.style.display === "") ? "block" : "none";
-        }
-        
-        function addTask() {
-            const litigation = document.getElementById("litigation").value;
-            const name = document.getElementById("name").value;
-            const entity = document.getElementById("entity").value;
-            const task = document.getElementById("task").value;
-            const status = document.getElementById("status").value;
-            const dueDate = document.getElementById("due_date").value;
-            const pendingFrom = document.getElementById("pending_from").value;
-            
-            if (!litigation || !name || !entity || !task || !status || !dueDate || !pendingFrom) {
-                alert("All fields are required! Please fill in all details.");
-                return;
-            }
-            
-            fetch("/add_task", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ litigation, name, entity, task, status, dueDate, pendingFrom })
-            }).then(response => response.json()).then(() => {
-                loadTasks();
-                document.getElementById("litigation").value = "";
-                document.getElementById("name").value = "";
-                document.getElementById("entity").value = "";
-                document.getElementById("task").value = "";
-                document.getElementById("status").value = "";
-                document.getElementById("due_date").value = "";
-                document.getElementById("pending_from").value = "";
-            });
-        }
-        
-        function loadTasks() {
-            fetch("/tasks").then(response => response.json()).then(data => {
-                let tableBody = document.getElementById("taskTableBody");
-                tableBody.innerHTML = "";
-                data.forEach((task, index) => {
-                    let row = `<tr>
-                        <td>${index + 1}</td>
-                        <td>${task.litigation}</td>
-                        <td>${task.name}</td>
-                        <td>${task.entity}</td>
-                        <td>${task.task}</td>
-                        <td>${task.status}</td>
-                        <td>${task.dueDate}</td>
-                        <td>${task.pendingFrom}</td>
-                    </tr>`;
-                    tableBody.innerHTML += row;
-                });
-            });
-        }
-        window.onload = loadTasks;
     </style>
     <script>
-        let sortOrder = {};
-        function sortTable(columnIndex) {
-            let table = document.querySelector("table tbody");
-            let rows = Array.from(table.querySelectorAll("tr"));
-            
-            sortOrder[columnIndex] = !sortOrder[columnIndex];
-            rows.sort((a, b) => {
-                let cellA = a.children[columnIndex].innerText.trim().toLowerCase();
-                let cellB = b.children[columnIndex].innerText.trim().toLowerCase();
-                return sortOrder[columnIndex] ? cellA.localeCompare(cellB) : cellB.localeCompare(cellA);
-            });
-            
-            table.innerHTML = "";
-            rows.forEach(row => table.appendChild(row));
+        function toggleTaskForm() {
+            let form = document.getElementById("taskForm");
+            form.style.display = (form.style.display === "none" || form.style.display === "") ? "flex" : "none";
         }
     </script>
 </head>
 <body>
     <h1>Task Manager</h1>
-    <button onclick="showTaskForm()">Add New Task</button>
+    <button onclick="toggleTaskForm()">Add New Task</button>
     
     <div id="taskForm">
         <input type="text" id="litigation" placeholder="Litigation">
@@ -119,14 +50,14 @@ def home():
     <table>
         <thead>
             <tr>
-                <th onclick="sortTable(0)">S.No. ⇅</th>
-                <th onclick="sortTable(1)">Litigation ⇅</th>
-                <th onclick="sortTable(2)">Name ⇅</th>
-                <th onclick="sortTable(3)">Entity ⇅</th>
-                <th onclick="sortTable(4)">Task ⇅</th>
-                <th onclick="sortTable(5)">Status ⇅</th>
-                <th onclick="sortTable(6)">Due Date ⇅</th>
-                <th onclick="sortTable(7)">Pending From ⇅</th>
+                <th>S.No.</th>
+                <th>Litigation</th>
+                <th>Name</th>
+                <th>Entity</th>
+                <th>Task</th>
+                <th>Status</th>
+                <th>Due Date</th>
+                <th>Pending From</th>
             </tr>
         </thead>
         <tbody id="taskTableBody">
