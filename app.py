@@ -85,16 +85,25 @@ def home():
             let columnIndex = Array.from(header.parentNode.children).indexOf(header);
             let table = document.querySelector("table tbody");
             let rows = Array.from(table.querySelectorAll("tr"));
-            let sortOrder = table.dataset.sortOrder ? table.dataset.sortOrder === 'asc' : true;
+            let sortOrder = header.dataset.sortOrder === 'asc' ? 'desc' : 'asc';
+            header.dataset.sortOrder = sortOrder;
             
             rows.sort((a, b) => {
-                let cellA = a.children[columnIndex].innerText.trim().toLowerCase();
-                let cellB = b.children[columnIndex].innerText.trim().toLowerCase();
+                let cellA = a.children[columnIndex].innerText.trim();
+                let cellB = b.children[columnIndex].innerText.trim();
+                
                 if (columnIndex === 6) { // Sorting by Due Date
-                    cellA = new Date(cellA);
-                    cellB = new Date(cellB);
-                    return sortOrder ? cellA - cellB : cellB - cellA;
+                    cellA = new Date(cellA.split('-').reverse().join('-'));
+                    cellB = new Date(cellB.split('-').reverse().join('-'));
+                    return sortOrder === 'asc' ? cellA - cellB : cellB - cellA;
+                } else {
+                    return sortOrder === 'asc' ? cellA.localeCompare(cellB) : cellB.localeCompare(cellA);
                 }
+            });
+            
+            table.innerHTML = "";
+            rows.forEach(row => table.appendChild(row));
+        }
                 return sortOrder ? cellA.localeCompare(cellB) : cellB.localeCompare(cellA);
             });
             
