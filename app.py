@@ -23,14 +23,10 @@ def home():
         table { width: 80%; margin: auto; border-collapse: collapse; margin-top: 20px; }
         th, td { padding: 10px; border: 1px solid #ddd; text-align: center; }
         th { background: #f4f4f4; cursor: pointer; }
-        #taskForm { display: none; flex-direction: column; align-items: center; margin-top: 20px; }
+        input { width: 100%; padding: 5px; }
     </style>
     <script>
-        function toggleTaskForm() {
-            let form = document.getElementById("taskForm");
-            form.style.display = (form.style.display === "none" || form.style.display === "") ? "flex" : "none";
-        }
-            function addTask() {
+        function addTask() {
             const litigation = document.getElementById("litigation").value;
             const name = document.getElementById("name").value;
             const entity = document.getElementById("entity").value;
@@ -79,67 +75,34 @@ def home():
                 });
             });
         }
-        
-        function sortByColumn(index) {
-            let table = document.getElementById("taskTableBody");
-            let rows = Array.from(table.getElementsByTagName("tr"));
-            let currentSort = table.dataset.sortColumn;
-            let sortOrder = (currentSort == index && table.dataset.sortOrder === 'asc') ? 'desc' : 'asc';
-            table.dataset.sortColumn = index;
-            table.dataset.sortOrder = sortOrder;
-            
-            rows.sort((a, b) => {
-                let cellA = a.children[index].innerText.trim();
-                let cellB = b.children[index].innerText.trim();
-                
-                if (index === 6) { // Sorting by Due Date
-                    cellA = new Date(cellA.split('-').reverse().join('-'));
-                    cellB = new Date(cellB.split('-').reverse().join('-'));
-                    return sortOrder === 'asc' ? cellA - cellB : cellB - cellA;
-                } else {
-                    return sortOrder === 'asc' ? cellA.localeCompare(cellB) : cellB.localeCompare(cellA);
-                }
-            });
-            
-            table.innerHTML = "";
-            rows.forEach(row => table.appendChild(row));
-        } else {
-                    return sortOrder === 'asc' ? cellA.localeCompare(cellB) : cellB.localeCompare(cellA);
-                }
-            });
-            
-            table.innerHTML = "";
-            rows.forEach(row => table.appendChild(row));
-        }
         window.onload = loadTasks;
     </script>
 </head>
 <body>
     <h1>Task Manager</h1>
-    <button onclick="toggleTaskForm()">Add New Task</button>
-    
-    <div id="taskForm">
-        <input type="text" id="litigation" placeholder="Litigation">
-        <input type="text" id="name" placeholder="Name">
-        <input type="text" id="entity" placeholder="Entity">
-        <input type="text" id="task" placeholder="Task">
-        <input type="text" id="status" placeholder="Status">
-        <input type="date" id="due_date" placeholder="Due Date">
-        <input type="text" id="pending_from" placeholder="Pending From">
-        <button onclick="addTask()">Save Task</button>
-    </div>
-    
     <table>
         <thead>
             <tr>
-                <th>S.No. <button onclick='sortByColumn(this)'>⇅</button></th>
-                <th>Litigation <button onclick='sortByColumn(this)'>⇅</button></th>
-                <th>Name <button onclick='sortByColumn(this)'>⇅</button></th>
-                <th>Entity <button onclick='sortByColumn(this)'>⇅</button></th>
-                <th>Task <button onclick='sortByColumn(this)'>⇅</button></th>
-                <th>Status <button onclick='sortByColumn(this)'>⇅</button></th>
-                <th>Due Date <button onclick='sortByColumn(this)'>⇅</button></th>
-                <th>Pending From <button onclick='sortByColumn(this)'>⇅</button></th>
+                <th>S.No.</th>
+                <th>Litigation</th>
+                <th>Name</th>
+                <th>Entity</th>
+                <th>Task</th>
+                <th>Status</th>
+                <th>Due Date</th>
+                <th>Pending From</th>
+                <th>Action</th>
+            </tr>
+            <tr>
+                <td>-</td>
+                <td><input type="text" id="litigation"></td>
+                <td><input type="text" id="name"></td>
+                <td><input type="text" id="entity"></td>
+                <td><input type="text" id="task"></td>
+                <td><input type="text" id="status"></td>
+                <td><input type="date" id="due_date"></td>
+                <td><input type="text" id="pending_from"></td>
+                <td><button onclick="addTask()">Save</button></td>
             </tr>
         </thead>
         <tbody id="taskTableBody">
