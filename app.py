@@ -28,88 +28,7 @@ def home():
     <script>
         function toggleTaskForm() {
             let form = document.getElementById("taskForm");
-            form.style.display = (form.style.display === "none" || form.style.display === "") ? "block" : "none";
-        }
-        
-        function addTask() {
-            const litigation = document.getElementById("litigation").value;
-            const name = document.getElementById("name").value;
-            const entity = document.getElementById("entity").value;
-            const task = document.getElementById("task").value;
-            const status = document.getElementById("status").value;
-            const dueDate = document.getElementById("due_date").value;
-            const pendingFrom = document.getElementById("pending_from").value;
-            
-            if (!litigation || !name || !entity || !task || !status || !dueDate || !pendingFrom) {
-                alert("All fields are required! Please fill in all details.");
-                return;
-            }
-            
-            fetch("/add_task", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ litigation, name, entity, task, status, dueDate, pendingFrom })
-            }).then(response => response.json()).then(() => {
-                loadTasks();
-                document.getElementById("litigation").value = "";
-                document.getElementById("name").value = "";
-                document.getElementById("entity").value = "";
-                document.getElementById("task").value = "";
-                document.getElementById("status").value = "";
-                document.getElementById("due_date").value = "";
-                document.getElementById("pending_from").value = "";
-            });
-        }
-        
-        function loadTasks() {
-            fetch("/tasks").then(response => response.json()).then(data => {
-                let tableBody = document.getElementById("taskTableBody");
-                tableBody.innerHTML = "";
-                data.forEach((task, index) => {
-                    let row = `<tr>
-                        <td>${index + 1}</td>
-                        <td>${task.litigation}</td>
-                        <td>${task.name}</td>
-                        <td>${task.entity}</td>
-                        <td>${task.task}</td>
-                        <td>${task.status}</td>
-                        <td>${task.dueDate}</td>
-                        <td>${task.pendingFrom}</td>
-                    </tr>`;
-                    tableBody.innerHTML += row;
-                });
-            });
-        }
-        window.onload = loadTasks;
-            function sortByColumn(header) {
-            let columnIndex = Array.from(header.parentNode.children).indexOf(header);
-            let table = document.querySelector("table tbody");
-            let rows = Array.from(table.querySelectorAll("tr"));
-            let sortOrder = header.dataset.sortOrder === 'asc' ? 'desc' : 'asc';
-            header.dataset.sortOrder = sortOrder;
-            
-            rows.sort((a, b) => {
-                let cellA = a.children[columnIndex].innerText.trim();
-                let cellB = b.children[columnIndex].innerText.trim();
-                
-                if (columnIndex === 6) { // Sorting by Due Date
-                    cellA = new Date(cellA.split('-').reverse().join('-'));
-                    cellB = new Date(cellB.split('-').reverse().join('-'));
-                    return sortOrder === 'asc' ? cellA - cellB : cellB - cellA;
-                } else {
-                    return sortOrder === 'asc' ? cellA.localeCompare(cellB) : cellB.localeCompare(cellA);
-                }
-            });
-            
-            table.innerHTML = "";
-            rows.forEach(row => table.appendChild(row));
-        }
-                return sortOrder ? cellA.localeCompare(cellB) : cellB.localeCompare(cellA);
-            });
-            
-            table.dataset.sortOrder = sortOrder ? 'desc' : 'asc';
-            table.innerHTML = "";
-            rows.forEach(row => table.appendChild(row));
+            form.style.display = (form.style.display === "none" || form.style.display === "") ? "flex" : "none";
         }
     </script>
 </head>
@@ -131,14 +50,14 @@ def home():
     <table>
         <thead>
             <tr>
-                <th>S.No. <button onclick='sortByColumn(this)'>⇅</button></th>
-                <th>Litigation <button onclick='sortByColumn(this)'>⇅</button></th>
-                <th>Name <button onclick='sortByColumn(this)'>⇅</button></th>
-                <th>Entity <button onclick='sortByColumn(this)'>⇅</button></th>
-                <th>Task <button onclick='sortByColumn(this)'>⇅</button></th>
-                <th>Status <button onclick='sortByColumn(this)'>⇅</button></th>
-                <th>Due Date <button onclick='sortByColumn(this)'>⇅</button></th>
-                <th>Pending From <button onclick='sortByColumn(this)'>⇅</button></th>
+                <th>S.No.</th>
+                <th>Litigation</th>
+                <th>Name</th>
+                <th>Entity</th>
+                <th>Task</th>
+                <th>Status</th>
+                <th>Due Date</th>
+                <th>Pending From</th>
             </tr>
         </thead>
         <tbody id="taskTableBody">
