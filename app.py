@@ -93,6 +93,19 @@ def home():
             table.innerHTML = "";
             rows.forEach(row => table.appendChild(row));
         }
+            function sortByColumn(index) {
+            let table = document.getElementById("taskTableBody");
+            let rows = Array.from(table.getElementsByTagName("tr"));
+            let sortOrder = table.dataset.sortOrder ? table.dataset.sortOrder === 'asc' : true;
+            rows.sort((a, b) => {
+                let cellA = a.children[index].innerText.toLowerCase();
+                let cellB = b.children[index].innerText.toLowerCase();
+                return sortOrder ? cellA.localeCompare(cellB) : cellB.localeCompare(cellA);
+            });
+            table.dataset.sortOrder = sortOrder ? 'desc' : 'asc';
+            table.innerHTML = "";
+            rows.forEach(row => table.appendChild(row));
+        }
     </script>
 </head>
 <body>
@@ -113,14 +126,14 @@ def home():
     <table>
         <thead>
             <tr>
-                <th>S.No.</th>
-                <th>Litigation</th>
+                <th>S.No. <button onclick='sortByColumn(0)'>⇅</button></th>
+                <th>Litigation <button onclick='sortByColumn(1)'>⇅</button></th>
                 <th>Name <button onclick='sortByName()'>⇅</button></th>
-                <th>Entity</th>
-                <th>Task</th>
-                <th>Status</th>
-                <th>Due Date</th>
-                <th>Pending From</th>
+                <th>Entity <button onclick='sortByColumn(3)'>⇅</button></th>
+                <th>Task <button onclick='sortByColumn(4)'>⇅</button></th>
+                <th>Status <button onclick='sortByColumn(5)'>⇅</button></th>
+                <th>Due Date <button onclick='sortByColumn(6)'>⇅</button></th>
+                <th>Pending From <button onclick='sortByColumn(7)'>⇅</button></th>
             </tr>
         </thead>
         <tbody id="taskTableBody">
