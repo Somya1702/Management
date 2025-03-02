@@ -81,6 +81,27 @@ def home():
             });
         }
         window.onload = loadTasks;
+            function sortByColumn(header) {
+            let columnIndex = Array.from(header.parentNode.children).indexOf(header);
+            let table = document.querySelector("table tbody");
+            let rows = Array.from(table.querySelectorAll("tr"));
+            let sortOrder = table.dataset.sortOrder ? table.dataset.sortOrder === 'asc' : true;
+            
+            rows.sort((a, b) => {
+                let cellA = a.children[columnIndex].innerText.trim().toLowerCase();
+                let cellB = b.children[columnIndex].innerText.trim().toLowerCase();
+                if (columnIndex === 6) { // Sorting by Due Date
+                    cellA = new Date(cellA);
+                    cellB = new Date(cellB);
+                    return sortOrder ? cellA - cellB : cellB - cellA;
+                }
+                return sortOrder ? cellA.localeCompare(cellB) : cellB.localeCompare(cellA);
+            });
+            
+            table.dataset.sortOrder = sortOrder ? 'desc' : 'asc';
+            table.innerHTML = "";
+            rows.forEach(row => table.appendChild(row));
+        }
     </script>
 </head>
 <body>
@@ -101,14 +122,14 @@ def home():
     <table>
         <thead>
             <tr>
-                <th>S.No.</th>
-                <th>Litigation</th>
-                <th>Name</th>
-                <th>Entity</th>
-                <th>Task</th>
-                <th>Status</th>
-                <th>Due Date</th>
-                <th>Pending From</th>
+                <th>S.No. <button onclick='sortByColumn(this)'>⇅</button></th>
+                <th>Litigation <button onclick='sortByColumn(this)'>⇅</button></th>
+                <th>Name <button onclick='sortByColumn(this)'>⇅</button></th>
+                <th>Entity <button onclick='sortByColumn(this)'>⇅</button></th>
+                <th>Task <button onclick='sortByColumn(this)'>⇅</button></th>
+                <th>Status <button onclick='sortByColumn(this)'>⇅</button></th>
+                <th>Due Date <button onclick='sortByColumn(this)'>⇅</button></th>
+                <th>Pending From <button onclick='sortByColumn(this)'>⇅</button></th>
             </tr>
         </thead>
         <tbody id="taskTableBody">
