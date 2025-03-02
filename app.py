@@ -65,6 +65,7 @@ def home():
                 let tableBody = document.getElementById("taskTableBody");
                 tableBody.innerHTML = "";
                 data.forEach((task, index) => {
+                    let serialNo = data.length - index;
                     let row = `<tr>
                         <td>${index + 1}</td>
                         <td>${task.entryDate}</td>
