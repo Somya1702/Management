@@ -32,6 +32,9 @@ def home():
     </style>
     <script>
         function addTask() {
+            const entryDate = new Date().toLocaleDateString('en-GB', {
+                day: '2-digit', month: 'short', year: 'numeric'
+            }).replace(/ /g, '-');
             const litigation = document.getElementById("litigation").value;
             const name = document.getElementById("name").value;
             const entity = document.getElementById("entity").value;
@@ -48,7 +51,7 @@ def home():
             fetch("/add_task", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ litigation, name, entity, task, status, dueDate, pendingFrom })
+                body: JSON.stringify({ entryDate, litigation, name, entity, task, status, dueDate, pendingFrom })
             }).then(response => response.json()).then(() => {
                 loadTasks();
                 document.getElementById("litigation").value = "";
@@ -62,12 +65,28 @@ def home():
         }
         
         function loadTasks() {
+            document.querySelectorAll('#taskTableBody td').forEach(cell => {
+                cell.ondblclick = function() {
+                    let input = document.createElement('input');
+                    input.value = this.innerText;
+                    input.onblur = function() {
+                        cell.innerText = input.value;
+                    };
+                    this.innerText = '';
+                    this.appendChild(input);
+                    input.focus();
+                };
+            });
             fetch("/tasks").then(response => response.json()).then(data => {
                 let tableBody = document.getElementById("taskTableBody");
                 tableBody.innerHTML = "";
                 data.forEach((task, index) => {
+                    if (!task.entryDate) task.entryDate = new Date().toLocaleDateString('en-GB', {
+                        day: '2-digit', month: 'short', year: 'numeric'
+                    }).replace(/ /g, '-');
                     let row = `<tr>
                         <td>${index + 1}</td>
+                        <td>${task.entryDate}</td>
                         <td>${task.litigation}</td>
                         <td>${task.name}</td>
                         <td>${task.entity}</td>
@@ -88,7 +107,8 @@ def home():
     <table>
         <thead>
             <tr>
-                <th>S.No. <button onclick='sortByColumn(this)'>⇅</button></th>
+                <th>S.No.</th>
+                <th>Entry Date <button onclick='sortByColumn(this)'>⇅</button></th>
                 <th>Litigation <button onclick='sortByColumn(this)'>⇅</button></th>
                 <th>Name <button onclick='sortByColumn(this)'>⇅</button></th>
                 <th>Entity <button onclick='sortByColumn(this)'>⇅</button></th>
@@ -100,6 +120,7 @@ def home():
             </tr>
             <tr>
                 <td>-</td>
+                <td></td>
                 <td><input type="text" id="litigation"></td>
                 <td><input type="text" id="name"></td>
                 <td><input type="text" id="entity"></td>
