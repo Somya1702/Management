@@ -19,6 +19,11 @@ def home():
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Task Manager</title>
     <style>
+        table { border-collapse: collapse; width: 80%; margin: auto; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+        th { background-color: #f4f4f4; cursor: pointer; }
+        input { width: 95%; padding: 4px; box-sizing: border-box; text-align: center; }
+        button { padding: 4px 8px; cursor: pointer; }
         body { font-family: Arial, sans-serif; text-align: center; margin-top: 5%; }
         table { width: 80%; margin: auto; border-collapse: collapse; margin-top: 20px; }
         th, td { padding: 10px; border: 1px solid #ddd; text-align: center; }
@@ -83,14 +88,14 @@ def home():
     <table>
         <thead>
             <tr>
-                <th>S.No.</th>
-                <th>Litigation</th>
-                <th>Name</th>
-                <th>Entity</th>
-                <th>Task</th>
-                <th>Status</th>
-                <th>Due Date</th>
-                <th>Pending From</th>
+                <th>S.No. <button onclick='sortByColumn(this)'>⇅</button></th>
+                <th>Litigation <button onclick='sortByColumn(this)'>⇅</button></th>
+                <th>Name <button onclick='sortByColumn(this)'>⇅</button></th>
+                <th>Entity <button onclick='sortByColumn(this)'>⇅</button></th>
+                <th>Task <button onclick='sortByColumn(this)'>⇅</button></th>
+                <th>Status <button onclick='sortByColumn(this)'>⇅</button></th>
+                <th>Due Date <button onclick='sortByColumn(this)'>⇅</button></th>
+                <th>Pending From <button onclick='sortByColumn(this)'>⇅</button></th>
                 <th>Action</th>
             </tr>
             <tr>
