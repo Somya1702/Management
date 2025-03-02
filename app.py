@@ -97,11 +97,25 @@ def home():
             let table = document.getElementById("taskTableBody");
             let rows = Array.from(table.getElementsByTagName("tr"));
             let sortOrder = table.dataset.sortOrder ? table.dataset.sortOrder === 'asc' : true;
-            rows.sort((a, b) => {
-                let cellA = a.children[index].innerText.toLowerCase();
-                let cellB = b.children[index].innerText.toLowerCase();
-                return sortOrder ? cellA.localeCompare(cellB) : cellB.localeCompare(cellA);
-            });
+            
+            if (index === 6) { // Sorting for Due Date
+                rows.sort((a, b) => {
+                    let dateA = new Date(a.children[index].innerText);
+                    let dateB = new Date(b.children[index].innerText);
+                    return sortOrder ? dateA - dateB : dateB - dateA;
+                });
+            } else {
+                rows.sort((a, b) => {
+                    let cellA = a.children[index].innerText.toLowerCase();
+                    let cellB = b.children[index].innerText.toLowerCase();
+                    return sortOrder ? cellA.localeCompare(cellB) : cellB.localeCompare(cellA);
+                });
+            }
+            
+            table.dataset.sortOrder = sortOrder ? 'desc' : 'asc';
+            table.innerHTML = "";
+            rows.forEach(row => table.appendChild(row));
+        });
             table.dataset.sortOrder = sortOrder ? 'desc' : 'asc';
             table.innerHTML = "";
             rows.forEach(row => table.appendChild(row));
