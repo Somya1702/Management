@@ -74,6 +74,17 @@ def home():
                 console.error("Error saving task:", error);
                 alert("Error saving task. Please check console logs.");
             });
+            }).then(response => response.json()).then((data) => {
+                if (data.message === "Task added successfully!") {
+                    loadTasks();
+                    document.querySelectorAll("thead input").forEach(input => input.value = "");
+                } else {
+                    alert("Failed to save task. Please try again.");
+                }
+            }).catch(error => {
+                console.error("Error saving task:", error);
+                alert("Error saving task. Please check console logs.");
+            });
             }).then(response => response.json()).then(() => {
                 loadTasks();
                 document.querySelectorAll("thead input").forEach(input => input.value = "");
