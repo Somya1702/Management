@@ -28,7 +28,7 @@ def home():
     <script>
         function toggleTaskForm() {
             let form = document.getElementById("taskForm");
-            form.style.display = (form.style.display === "none" || form.style.display === "") ? "flex" : "none";
+            form.style.display = (form.style.display === "none" || form.style.display === "") ? "block" : "none";
         }
         
         function addTask() {
