@@ -83,7 +83,9 @@ def home():
         function sortByColumn(index) {
             let table = document.getElementById("taskTableBody");
             let rows = Array.from(table.getElementsByTagName("tr"));
-            let sortOrder = table.dataset.sortOrder === 'asc' ? 'desc' : 'asc';
+            let currentSort = table.dataset.sortColumn;
+            let sortOrder = (currentSort == index && table.dataset.sortOrder === 'asc') ? 'desc' : 'asc';
+            table.dataset.sortColumn = index;
             table.dataset.sortOrder = sortOrder;
             
             rows.sort((a, b) => {
@@ -95,6 +97,13 @@ def home():
                     cellB = new Date(cellB.split('-').reverse().join('-'));
                     return sortOrder === 'asc' ? cellA - cellB : cellB - cellA;
                 } else {
+                    return sortOrder === 'asc' ? cellA.localeCompare(cellB) : cellB.localeCompare(cellA);
+                }
+            });
+            
+            table.innerHTML = "";
+            rows.forEach(row => table.appendChild(row));
+        } else {
                     return sortOrder === 'asc' ? cellA.localeCompare(cellB) : cellB.localeCompare(cellA);
                 }
             });
