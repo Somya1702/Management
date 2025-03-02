@@ -68,10 +68,15 @@ def home():
             document.querySelectorAll('#taskTableBody td').forEach(cell => {
                 cell.ondblclick = function() {
                     let input = document.createElement('input');
+                    input.type = 'text';
                     input.value = this.innerText;
                     input.onblur = function() {
                         cell.innerText = input.value;
                     };
+                    this.innerText = '';
+                    this.appendChild(input);
+                    input.focus();
+                };
                     this.innerText = '';
                     this.appendChild(input);
                     input.focus();
@@ -174,7 +179,7 @@ def home():
             </tr>
             <tr>
                 <td><button onclick='enableSearch()'>Search</button></td>
-                <td></td>
+                <td><input type='date' id='entry_date'></td>
                 <td><input type="text" id="litigation"></td>
                 <td><input type="text" id="name"></td>
                 <td><input type="text" id="entity"></td>
