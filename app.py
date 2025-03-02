@@ -3,7 +3,7 @@ from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://username:password@host:port/dbname'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///C:/Users/team0/Desktop/Management/tasks.db'
 db = SQLAlchemy(app)
 
 class Task(db.Model):
