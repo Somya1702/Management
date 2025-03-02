@@ -84,6 +84,7 @@ def home():
                         <td>${task.task}</td>
                         <td>${task.status}</td>
                         <td>${task.due_date}</td>
+                        <td>${calculateDays(task.due_date)}</td>
                         <td>${task.pending_from}</td>
                     </tr>`;
                     tableBody.innerHTML += row;
@@ -121,6 +122,12 @@ def home():
                 row.style.display = show ? "" : "none";
             });
         }
+            function calculateDays(dueDate) {
+            const today = new Date();
+            const due = new Date(dueDate.split('-').reverse().join('-'));
+            const diffTime = due - today;
+            return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        }
     </script>
 </head>
 <body>
@@ -136,6 +143,7 @@ def home():
                 <th>Task</th>
                 <th>Status</th>
                 <th>Due Date</th>
+                <th>No. of Days</th>
                 <th>Pending From</th>
                 <th>Action</th>
             </tr>
