@@ -158,7 +158,6 @@ def home():
                 <td><input type="date" id="due_date"></td>
                 <td></td>
                 <td><input type="text" id="pending_from"></td>
-                <td></td>
                 <td><button onclick="addTask()">Save</button></td>
             </tr>
         </thead>
