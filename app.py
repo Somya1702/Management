@@ -123,14 +123,14 @@ def home():
     <table>
         <thead>
             <tr>
-                <th>S.No.</th>
-                <th>Litigation</th>
-                <th>Name</th>
-                <th>Entity</th>
-                <th>Task</th>
-                <th>Status</th>
-                <th>Due Date</th>
-                <th>Pending From</th>
+                <th>S.No. <button onclick='sortByColumn(this)'>⇅</button></th>
+                <th>Litigation <button onclick='sortByColumn(this)'>⇅</button></th>
+                <th>Name <button onclick='sortByColumn(this)'>⇅</button></th>
+                <th>Entity <button onclick='sortByColumn(this)'>⇅</button></th>
+                <th>Task <button onclick='sortByColumn(this)'>⇅</button></th>
+                <th>Status <button onclick='sortByColumn(this)'>⇅</button></th>
+                <th>Due Date <button onclick='sortByColumn(this)'>⇅</button></th>
+                <th>Pending From <button onclick='sortByColumn(this)'>⇅</button></th>
             </tr>
         </thead>
         <tbody id="taskTableBody">
