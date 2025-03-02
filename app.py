@@ -153,7 +153,7 @@ def home():
 def add_task():
     data = request.json
     data["dueDate"] = format_date(data["dueDate"])
-    tasks.append(data)
+    tasks.insert(0, data)
     return jsonify({"message": "Task added successfully!"})
 
 @app.route("/tasks", methods=["GET"])
